@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>K.T - JARVIS AI</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:#050b16;color:#00eaff;
+ font-family:Arial,sans-serif;text-align:center;
+ min-height:100vh;display:flex;align-items:center;
+ justify-content:center;
+}
+.app{width:100%;max-width:450px;padding:25px}
+h1{font-size:36px;letter-spacing:7px}
+.circle{
+ width:190px;height:190px;border:3px solid #00eaff;
+ border-radius:50%;margin:30px auto;
+ display:flex;align-items:center;justify-content:center;
+ box-shadow:0 0 30px #00eaff,inset 0 0 25px #00eaff;
+ animation:pulse 2s infinite;
+}
+.circle span{font-size:65px}
+@keyframes pulse{
+ 50%{box-shadow:0 0 55px #00eaff,inset 0 0 35px #00eaff}
+}
+p{color:#a9dce5}
+button{
+ background:#00d9ee;color:#001018;border:0;
+ padding:15px 25px;border-radius:25px;
+ font-size:16px;font-weight:bold;margin:8px;
+}
+input{
+ width:100%;padding:15px;border-radius:25px;
+ border:1px solid #00eaff;background:#101e30;
+ color:white;margin-top:20px;
+}
+#reply{margin-top:25px;min-height:60px;color:white}
+</style>
+</head>
+<body>
+<div class="app">
+<h1>K.T JARVIS</h1>
+<p>YOUR PERSONAL AI ASSISTANT</p>
+<div class="circle"><span>◉</span></div>
+<p id="status">SYSTEM ONLINE</p>
+<button onclick="listen()">🎙️ TALK TO K.T</button>
+<input id="message" placeholder="Type your message...">
+<button onclick="send()">SEND</button>
+<div id="reply">Hello! I am K.T. How can I help you?</div>
+</div>
+<script>
+const reply=document.getElementById("reply");
+function speak(text){
+ if(!("speechSynthesis" in window))return;
+ speechSynthesis.cancel();
+ let voice=new SpeechSynthesisUtterance(text);
+ voice.lang="en-US";
+ voice.pitch=0.85;
+ voice.rate=0.9;
+ speechSynthesis.speak(voice);
+}
+function send(){
+ let msg=document.getElementById("message").value.trim();
+ if(!msg)return;
+ reply.innerText="You: "+msg+"\nK.T: Hello! I heard you. AI connection will be added next.";
+ speak("Hello! I heard you.");
+}
+function listen(){
+ const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SpeechRecognition){
+ reply.innerText="Voice recognition is not supported in this browser.";
+ return;
+ }
+ let rec=new SpeechRecognition();
+ rec.lang="en-US";
+ rec.onstart=()=>document.getElementById("status").innerText="LISTENING...";
+ rec.onresult=e=>{
+ document.getElementById("message").value=e.results[0][0].transcript;
+ send();
+ };
+ rec.onend=()=>document.getElementById("status").innerText="SYSTEM ONLINE";
+ rec.start();
+}
+</script>
+</body>
+</html>
